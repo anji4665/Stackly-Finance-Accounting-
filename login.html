@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Stackly | Login — Finance &amp; Accounting</title>
+    <meta name="description" content="Sign in to your Stackly Finance & Accounting account. Access bookkeeping, tax filing, payroll, audit and financial reporting services." />
+    <meta name="theme-color" content="#f0faf2" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <style>
+        /* ============================================
+           STACKLY FINANCE & ACCOUNTING — LOGIN STYLES
+           LIGHT GREEN THEME
+           ============================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #eef8f0;
+            color: #12301f;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== Hide native password reveal in Edge & Chrome ===== */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear,
+        input[type="password"]::-webkit-password-toggle,
+        input[type="password"]::-webkit-credentials-auto-fill-button {
+            display: none !important;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
+            color: inherit;
+        }
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        :root {
+            /* Light green palette */
+            --green-50: #f4fcf6;
+            --green-100: #e6f6ec;
+            --green-200: #cbead6;
+            --green-300: #a3dcb8;
+            --green-400: #6ec78f;
+            --green-500: #3fae67;
+            --green-600: #2e8f52;
+            --green-700: #24703f;
+            --green-800: #1c5431;
+
+            --ink-900: #12301f;
+            --ink-700: #2c4d38;
+            --ink-500: #55745f;
+            --ink-400: #7d9686;
+            --ink-300: #a3b8a9;
+
+            --white: #ffffff;
+            --red-500: #d9534f;
+            --amber-500: #e0a02a;
+
+            --surface: rgba(255, 255, 255, 0.72);
+            --surface-strong: rgba(255, 255, 255, 0.9);
+            --border-soft: rgba(63, 174, 103, 0.18);
+            --border-mid: rgba(63, 174, 103, 0.28);
+
+            --radius: 12px;
+            --radius-lg: 20px;
+            --radius-sm: 8px;
+            --shadow-card: 0 10px 34px rgba(28, 84, 49, 0.10);
+            --shadow-soft: 0 4px 16px rgba(28, 84, 49, 0.08);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Floating symbols */
+        .floating-crosses {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .floating-cross {
+            position: absolute;
+            bottom: -5%;
+            color: var(--green-500);
+            animation: floatUp linear infinite;
+            will-change: transform;
+        }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+            }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 22px;
+            border-radius: var(--radius);
+            background: var(--surface-strong);
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-card);
+            z-index: 9999;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            max-width: 380px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .toast.success {
+            border-left: 4px solid var(--green-500);
+        }
+        .toast.error {
+            border-left: 4px solid var(--red-500);
+        }
+        .toast.info {
+            border-left: 4px solid var(--green-400);
+        }
+        .toast-icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .toast-body {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+        .toast-body strong {
+            font-size: 0.9rem;
+            color: var(--ink-900);
+        }
+        .toast-body span {
+            font-size: 0.8rem;
+            color: var(--ink-500);
+        }
+
+        /* Login page layout */
+        .login-page {
+            position: relative;
+            display: flex;
+            min-height: 100vh;
+            min-height: 100dvh;
+            z-index: 1;
+        }
+        .login-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                linear-gradient(135deg, rgba(244, 252, 246, 0.94) 0%, rgba(230, 246, 236, 0.88) 50%, rgba(244, 252, 246, 0.96) 100%),
+                url('./images/finance-accounting.webp') center/cover no-repeat;
+        }
+
+        /* Left branding */
+        .login-branding {
+            flex: 0 0 45%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-branding::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 30% 50%, rgba(63, 174, 103, 0.10) 0%, transparent 60%),
+                linear-gradient(160deg, rgba(255, 255, 255, 0.55) 0%, transparent 55%);
+            z-index: 0;
+        }
+        .login-branding::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 10%;
+            bottom: 10%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--border-mid), transparent);
+        }
+        .branding-content {
+            position: relative;
+            z-index: 1;
+            max-width: 440px;
+        }
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            transition: opacity var(--transition), transform var(--transition);
+        }
+        .brand-logo:hover {
+            opacity: 0.85;
+            transform: scale(1.03);
+        }
+        .brand-logo-img {
+            height: 48px;
+            width: auto;
+            max-width: 100%;
+            display: block;
+        }
+        .branding-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--ink-900);
+            margin-bottom: 1.2rem;
+        }
+        .branding-heading em {
+            color: var(--green-600);
+            font-style: italic;
+        }
+        .branding-desc {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--ink-500);
+            margin-bottom: 2.5rem;
+        }
+        .branding-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 1.2rem 0;
+            border-top: 1px solid var(--border-soft);
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .brand-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .stat-num {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--green-600);
+            font-family: 'Playfair Display', serif;
+        }
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--ink-400);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .branding-trust {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+            color: var(--ink-500);
+            font-size: 0.82rem;
+        }
+        .trust-shield {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(63, 174, 103, 0.14);
+            color: var(--green-600);
+            flex-shrink: 0;
+        }
+
+        /* Right panel */
+        .login-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 2.5rem;
+            position: relative;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+        .mobile-brand {
+            display: none;
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+        .mobile-brand .brand-logo {
+            margin-bottom: 0.3rem;
+            display: inline-flex;
+            transition: opacity var(--transition), transform var(--transition);
+        }
+        .mobile-brand .brand-logo:hover {
+            opacity: 0.85;
+            transform: scale(1.03);
+        }
+        .mobile-tagline {
+            font-size: 0.85rem;
+            color: var(--ink-500);
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Back to Home button */
+        .back-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 50px;
+            border: 1px solid var(--border-soft);
+            background: var(--surface);
+            color: var(--ink-500);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 1.2rem;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .back-home-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50px;
+            opacity: 0;
+            background: linear-gradient(135deg, var(--green-500), var(--green-400));
+            transition: opacity var(--transition);
+            z-index: 0;
+        }
+        .back-home-btn:hover {
+            color: var(--white);
+            border-color: var(--green-500);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(63, 174, 103, 0.28);
+        }
+        .back-home-btn:hover::before {
+            opacity: 1;
+        }
+        .back-home-btn svg,
+        .back-home-btn span {
+            position: relative;
+            z-index: 1;
+        }
+        .back-home-btn svg {
+            flex-shrink: 0;
+            transition: transform var(--transition);
+        }
+        .back-home-btn:hover svg {
+            transform: translateX(-3px);
+        }
+
+        /* Role tabs */
+        .role-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 1.5rem;
+            padding: 5px;
+            background: var(--surface);
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 440px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .role-tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--ink-500);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            min-width: 0;
+        }
+        .role-tab::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-sm);
+            opacity: 0;
+            background: linear-gradient(135deg, var(--green-100), var(--green-200));
+            transition: opacity var(--transition);
+        }
+        .role-tab:hover {
+            color: var(--green-700);
+        }
+        .role-tab:hover::before {
+            opacity: 1;
+        }
+        .role-tab.active {
+            color: var(--white);
+            font-weight: 600;
+        }
+        .role-tab.active::before {
+            opacity: 1;
+            background: linear-gradient(135deg, var(--green-500), var(--green-600));
+            box-shadow: 0 4px 14px rgba(63, 174, 103, 0.30);
+        }
+        .role-tab svg,
+        .role-tab span {
+            position: relative;
+            z-index: 1;
+        }
+        .role-tab svg {
+            flex-shrink: 0;
+        }
+
+        /* Form container */
+        .form-container {
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+        }
+        .form-wrapper {
+            display: none;
+            animation: fadeSlideIn 0.4s ease forwards;
+        }
+        .form-wrapper.active {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-header {
+            margin-bottom: 1.5rem;
+        }
+        .form-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--ink-900);
+            margin-bottom: 0.3rem;
+        }
+        .form-header p {
+            font-size: 0.9rem;
+            color: var(--ink-400);
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--ink-700);
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            font-size: 0.9rem;
+            color: var(--ink-400);
+            pointer-events: none;
+            transition: color var(--transition);
+            z-index: 2;
+        }
+        .input-wrap input,
+        .input-wrap select {
+            width: 100%;
+            padding: 13px 14px 13px 42px;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            color: var(--ink-900);
+            font-size: 0.92rem;
+            transition: var(--transition);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .input-wrap select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237d9686' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+            text-overflow: ellipsis;
+        }
+        .input-wrap select option {
+            background: var(--white);
+            color: var(--ink-900);
+        }
+        .input-wrap input:focus,
+        .input-wrap select:focus {
+            border-color: var(--green-500);
+            background: var(--green-50);
+            box-shadow: 0 0 0 3px rgba(63, 174, 103, 0.14);
+        }
+        .input-wrap input:focus~.input-icon,
+        .input-wrap input:focus~.toggle-pw {
+            color: var(--green-600);
+        }
+        .input-wrap input::placeholder {
+            color: var(--ink-300);
+            opacity: 1;
+        }
+        .toggle-pw {
+            position: absolute;
+            right: 14px;
+            font-size: 0.9rem;
+            color: var(--ink-400);
+            cursor: pointer;
+            transition: color var(--transition);
+            z-index: 2;
+            padding: 4px;
+        }
+        .toggle-pw:hover {
+            color: var(--green-600);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+        .input-row .input-group {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .form-extras {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            font-size: 0.82rem;
+            gap: 10px;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--ink-500);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--green-500);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .forgot-link {
+            color: var(--green-600);
+            font-weight: 600;
+            transition: color var(--transition);
+            white-space: nowrap;
+        }
+        .forgot-link:hover {
+            color: var(--green-700);
+        }
+
+        .btn-submit {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 24px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--green-500), var(--green-600));
+            color: var(--white);
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 22px rgba(63, 174, 103, 0.28);
+        }
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--green-400), var(--green-500));
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        .btn-submit:hover::before {
+            opacity: 1;
+        }
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 28px rgba(63, 174, 103, 0.35);
+        }
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        .btn-text,
+        .btn-arrow {
+            position: relative;
+            z-index: 1;
+        }
+        .btn-arrow {
+            flex-shrink: 0;
+        }
+        .btn-spinner {
+            position: relative;
+            z-index: 1;
+            display: none;
+        }
+        .btn-submit.loading .btn-text,
+        .btn-submit.loading .btn-arrow {
+            display: none;
+        }
+        .btn-submit.loading .btn-spinner {
+            display: inline-flex;
+        }
+        .btn-submit.loading {
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .form-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 1.2rem 0;
+            color: var(--ink-400);
+            font-size: 0.8rem;
+        }
+        .form-divider::before,
+        .form-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-soft);
+        }
+
+        .social-login {
+            margin-bottom: 1rem;
+        }
+        .social-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-soft);
+            background: var(--white);
+            color: var(--ink-700);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .social-btn:hover {
+            background: var(--green-50);
+            border-color: var(--border-mid);
+            box-shadow: var(--shadow-soft);
+        }
+        .social-btn svg {
+            flex-shrink: 0;
+        }
+
+        .form-switch {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--ink-500);
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+        .form-switch a {
+            color: var(--green-600);
+            font-weight: 600;
+            transition: color var(--transition);
+        }
+        .form-switch a:hover {
+            color: var(--green-700);
+        }
+
+        .panel-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: var(--ink-400);
+            text-align: center;
+            line-height: 1.5;
+        }
+        .panel-footer svg {
+            color: var(--green-600);
+            flex-shrink: 0;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .login-branding {
+                flex: 0 0 40%;
+                padding: 2rem;
+            }
+            .branding-heading {
+                font-size: 2.4rem;
+            }
+            .branding-desc {
+                font-size: 0.95rem;
+            }
+            .branding-stats {
+                gap: 1.4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-page {
+                flex-direction: column;
+            }
+            .login-branding {
+                display: none;
+            }
+            .mobile-brand {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .login-panel {
+                padding: 1.5rem 1.2rem calc(1.5rem + env(safe-area-inset-bottom));
+                justify-content: flex-start;
+                padding-top: calc(2.5rem + env(safe-area-inset-top));
+                min-height: 100dvh;
+            }
+            .back-home-btn {
+                align-self: flex-start;
+                margin-bottom: 1rem;
+            }
+            .form-header h2 {
+                font-size: 1.5rem;
+            }
+            .panel-footer {
+                margin-top: 1.5rem;
+            }
+        }
+
+        @media (max-width: 520px) {
+            html {
+                font-size: 15px;
+            }
+            .login-panel {
+                padding: 1.2rem 1rem calc(1.4rem + env(safe-area-inset-bottom));
+                padding-top: calc(1.8rem + env(safe-area-inset-top));
+            }
+            .role-tabs {
+                max-width: 100%;
+                gap: 4px;
+                padding: 4px;
+            }
+            .role-tab {
+                padding: 11px 8px;
+                font-size: 0.85rem;
+                gap: 6px;
+            }
+            .form-container {
+                max-width: 100%;
+            }
+            .form-container::before {
+                inset: -8px;
+                border-radius: var(--radius);
+            }
+            .input-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .input-row .input-group {
+                margin-bottom: 1rem;
+            }
+            .input-row .input-group:last-child {
+                margin-bottom: 1rem;
+            }
+            .form-header h2 {
+                font-size: 1.4rem;
+            }
+            .form-header p {
+                font-size: 0.85rem;
+            }
+            .btn-submit {
+                padding: 14px 20px;
+            }
+            /* Prevent iOS zoom-on-focus */
+            .input-wrap input,
+            .input-wrap select {
+                font-size: 16px;
+                padding: 13px 14px 13px 42px;
+            }
+            .input-wrap select {
+                padding-right: 36px;
+            }
+            .toast {
+                top: auto;
+                bottom: calc(16px + env(safe-area-inset-bottom));
+                right: 12px;
+                left: 12px;
+                max-width: none;
+                transform: translateY(140%);
+            }
+            .toast.show {
+                transform: translateY(0);
+            }
+
+            /* Keep "Forgot password?" on the right side */
+            .form-extras {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.78rem;
+                gap: 6px;
+            }
+            .forgot-link {
+                font-size: inherit;
+            }
+
+            .back-home-btn {
+                align-self: flex-start;
+                font-size: 0.8rem;
+                padding: 8px 14px;
+                gap: 6px;
+            }
+            .mobile-tagline {
+                font-size: 0.78rem;
+                letter-spacing: 0.8px;
+            }
+            .brand-logo-img {
+                height: 42px;
+            }
+            .panel-footer {
+                font-size: 0.7rem;
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .role-tab span {
+                font-size: 0.8rem;
+            }
+            .role-tab svg {
+                width: 16px;
+                height: 16px;
+            }
+            .form-header h2 {
+                font-size: 1.28rem;
+            }
+            .form-extras {
+                font-size: 0.74rem;
+            }
+        }
+
+        /* Short landscape phones */
+        @media (max-height: 560px) and (max-width: 900px) {
+            .login-panel {
+                justify-content: flex-start;
+                padding-top: 1.2rem;
+            }
+            .mobile-brand {
+                margin-bottom: 0.4rem;
+            }
+            .back-home-btn {
+                margin-bottom: 0.7rem;
+            }
+        }
+
+        /* Animations & decorative card */
+        .login-panel::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: -30%;
+            width: 60%;
+            height: 50%;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(63, 174, 103, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .form-container::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.62);
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-card);
+            z-index: -1;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        @keyframes focusRing {
+            0% {
+                box-shadow: 0 0 0 0 rgba(63, 174, 103, 0.30);
+            }
+            100% {
+                box-shadow: 0 0 0 6px rgba(63, 174, 103, 0);
+            }
+        }
+        .input-wrap input:focus {
+            animation: focusRing 0.4s ease forwards;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #eaf6ee;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b9dfc6;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8ecfa4;
+        }
+        @media (max-width: 768px) {
+            html,
+            body {
+                width: 100%;
+                overflow-x: hidden;
+            }
+        }
+
+        /* Accessibility focus states */
+        .role-tab:focus-visible,
+        .btn-submit:focus-visible,
+        .social-btn:focus-visible,
+        .back-home-btn:focus-visible,
+        .toggle-pw:focus-visible {
+            outline: 2px solid var(--green-500);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="floatingCrosses" class="floating-crosses" aria-hidden="true"></div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite">
+        <span id="toastIconEl" class="toast-icon">✅</span>
+        <div class="toast-body">
+            <strong id="toastTitle">Success</strong>
+            <span id="toastMsg">Operation completed.</span>
+        </div>
+    </div>
+
+    <div class="login-page">
+        <div class="login-bg" aria-hidden="true"></div>
+
+        <div class="login-branding">
+            <div class="branding-content">
+                <a href="index.html" class="brand-logo" title="Back to Home">
+                    <img src="Stackly_logo.webp" alt="Stackly Logo" class="brand-logo-img" />
+                </a>
+                <h1 class="branding-heading">Finance &amp;<br /><em>Accounting</em></h1>
+                <p class="branding-desc">
+                    Bookkeeping, tax filing, payroll, audit and financial reporting — accurate numbers and clear insights trusted by businesses and individuals nationwide.
+                </p>
+                <div class="branding-stats">
+                    <div class="brand-stat">
+                        <span class="stat-num">10,000+</span>
+                        <span class="stat-label">Clients Served</span>
+                    </div>
+                    <div class="brand-stat">
+                        <span class="stat-num">99.2%</span>
+                        <span class="stat-label">Accuracy Rate</span>
+                    </div>
+                    <div class="brand-stat">
+                        <span class="stat-num">15+</span>
+                        <span class="stat-label">Years</span>
+                    </div>
+                </div>
+                <div class="branding-trust">
+                    <div class="trust-shield">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 4v6c0 5.25-3.5 10-7 12-3.5-2-7-6.75-7-12V6l7-4z"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <span>256-bit SSL Encrypted · Bank-Grade Security</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-panel">
+            <div class="mobile-brand">
+                <a href="index.html" class="brand-logo" title="Back to Home">
+                    <img src="Stackly_logo.webp" alt="Stackly Logo" class="brand-logo-img" />
+                </a>
+                <p class="mobile-tagline">Finance &amp; Accounting</p>
+            </div>
+
+            <!-- Back to Home Button -->
+            <a href="index.html" class="back-home-btn" title="Return to Homepage">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                <span>Back to Home</span>
+            </a>
+
+            <div class="role-tabs" role="tablist" aria-label="Select account type">
+                <button class="role-tab active" data-role="customer" onclick="switchRole('customer')" role="tab" aria-selected="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>Client</span>
+                </button>
+                <button class="role-tab" data-role="employee" onclick="switchRole('employee')" role="tab" aria-selected="false">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                    <span>Staff</span>
+                </button>
+            </div>
+
+            <div id="formContainer" class="form-container">
+
+                <!-- CLIENT LOGIN -->
+                <div class="form-wrapper active" id="customerLoginForm">
+                    <div class="form-header">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to access your financial dashboard</p>
+                    </div>
+                    <form onsubmit="handleLogin(event, 'customer')" novalidate>
+                        <div class="input-group">
+                            <label for="customerLoginEmail">Email Address</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" id="customerLoginEmail" placeholder="you@gmail.com" required autocomplete="email" />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="customerLoginPassword">Password</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="customerLoginPassword" placeholder="••••••••" required autocomplete="current-password" />
+                                <i class="fa-solid fa-eye toggle-pw" onclick="togglePassword('customerLoginPassword', this)" aria-label="Show password" tabindex="0"></i>
+                            </div>
+                        </div>
+                        <div class="form-extras">
+                            <label class="remember-me"><input type="checkbox" /> Remember me</label>
+                            <a href="404.html" class="forgot-link">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="btn-submit" id="customerLoginBtn">
+                            <span class="btn-text">Sign In</span>
+                            <span class="btn-spinner"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                            <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </form>
+                    <div class="form-divider"><span>or</span></div>
+                    <div class="social-login">
+                        <button class="social-btn google" type="button" onclick="window.location.href='404.html'">
+                            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                            Sign in with Google
+                        </button>
+                    </div>
+                    <p class="form-switch">Don't have an account? <a href="javascript:void(0)" onclick="showCreateAccount('customer')">Create Account</a></p>
+                </div>
+
+                <!-- CLIENT CREATE ACCOUNT -->
+                <div class="form-wrapper" id="customerCreateForm">
+                    <div class="form-header">
+                        <h2>Create Client Account</h2>
+                        <p>Start managing your finances with Stackly</p>
+                    </div>
+                    <form onsubmit="handleCreateAccount(event, 'customer')" novalidate>
+                        <div class="input-group">
+                            <label for="customerCreateName">Full Name</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" id="customerCreateName" placeholder="John Smith" required autocomplete="name" />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="customerCreateEmail">Email Address</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" id="customerCreateEmail" placeholder="you@gmail.com" required autocomplete="email" />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="customerCreatePhone">Phone Number</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-phone input-icon"></i>
+                                <input type="tel" id="customerCreatePhone" placeholder="10-digit number" required autocomplete="tel" inputmode="numeric" />
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="customerCreatePassword">Password</label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="customerCreatePassword" placeholder="••••••••" required autocomplete="new-password" />
+                                    <i class="fa-solid fa-eye toggle-pw" onclick="togglePassword('customerCreatePassword', this)" aria-label="Show password" tabindex="0"></i>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="customerCreateConfirmPassword">Confirm</label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="customerCreateConfirmPassword" placeholder="••••••••" required autocomplete="new-password" />
+                                    <i class="fa-solid fa-eye toggle-pw" onclick="togglePassword('customerCreateConfirmPassword', this)" aria-label="Show password" tabindex="0"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" id="customerCreateBtn">
+                            <span class="btn-text">Create Account</span>
+                            <span class="btn-spinner"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                            <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </form>
+                    <p class="form-switch">Already have an account? <a href="javascript:void(0)" onclick="showLogin('customer')">Sign In</a></p>
+                </div>
+
+                <!-- STAFF LOGIN -->
+                <div class="form-wrapper" id="employeeLoginForm">
+                    <div class="form-header">
+                        <h2>Staff Portal</h2>
+                        <p>Sign in with your employee credentials</p>
+                    </div>
+                    <form onsubmit="handleLogin(event, 'employee')" novalidate>
+                        <div class="input-group">
+                            <label for="employeeLoginId">Employee ID or Email</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-id-badge input-icon"></i>
+                                <input type="text" id="employeeLoginId" placeholder="EMP-12345 or you@gmail.com" required autocomplete="username" />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="employeeLoginDept">Department</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-building input-icon"></i>
+                                <select id="employeeLoginDept">
+                                    <option value="bookkeeping">Bookkeeping &amp; Ledger</option>
+                                    <option value="tax">Tax Preparation</option>
+                                    <option value="payroll">Payroll Services</option>
+                                    <option value="audit">Audit &amp; Assurance</option>
+                                    <option value="advisory">Financial Advisory</option>
+                                    <option value="compliance">Compliance &amp; Reporting</option>
+                                    <option value="admin">Administration</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="employeeLoginPassword">Password</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="employeeLoginPassword" placeholder="••••••••" required autocomplete="current-password" />
+                                <i class="fa-solid fa-eye toggle-pw" onclick="togglePassword('employeeLoginPassword', this)" aria-label="Show password" tabindex="0"></i>
+                            </div>
+                        </div>
+                        <div class="form-extras">
+                            <label class="remember-me"><input type="checkbox" /> Remember me</label>
+                            <a href="404.html" class="forgot-link">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="btn-submit" id="employeeLoginBtn">
+                            <span class="btn-text">Sign In</span>
+                            <span class="btn-spinner"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                            <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </form>
+                    <div class="form-divider"><span>or</span></div>
+                    <p class="form-switch">New staff member? <a href="javascript:void(0)" onclick="showCreateAccount('employee')">Register Account</a></p>
+                </div>
+
+                <!-- STAFF CREATE ACCOUNT -->
+                <div class="form-wrapper" id="employeeCreateForm">
+                    <div class="form-header">
+                        <h2>Staff Registration</h2>
+                        <p>Create your Stackly employee account</p>
+                    </div>
+                    <form onsubmit="handleCreateAccount(event, 'employee')" novalidate>
+                        <div class="input-group">
+                            <label for="employeeCreateName">Full Name</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" id="employeeCreateName" placeholder="Jane Doe" required autocomplete="name" />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="employeeCreateEmpId">Employee ID</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-id-badge input-icon"></i>
+                                <input type="text" id="employeeCreateEmpId" placeholder="EMP-XXXXX" />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="employeeCreateEmail">Email Address</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" id="employeeCreateEmail" placeholder="you@gmail.com" required autocomplete="email" />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="employeeCreateDept">Department</label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-building input-icon"></i>
+                                <select id="employeeCreateDept">
+                                    <option value="bookkeeping">Bookkeeping &amp; Ledger</option>
+                                    <option value="tax">Tax Preparation</option>
+                                    <option value="payroll">Payroll Services</option>
+                                    <option value="audit">Audit &amp; Assurance</option>
+                                    <option value="advisory">Financial Advisory</option>
+                                    <option value="compliance">Compliance &amp; Reporting</option>
+                                    <option value="admin">Administration</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="employeeCreatePassword">Password</label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="employeeCreatePassword" placeholder="••••••••" required autocomplete="new-password" />
+                                    <i class="fa-solid fa-eye toggle-pw" onclick="togglePassword('employeeCreatePassword', this)" aria-label="Show password" tabindex="0"></i>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="employeeCreateConfirmPassword">Confirm</label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="employeeCreateConfirmPassword" placeholder="••••••••" required autocomplete="new-password" />
+                                    <i class="fa-solid fa-eye toggle-pw" onclick="togglePassword('employeeCreateConfirmPassword', this)" aria-label="Show password" tabindex="0"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" id="employeeCreateBtn">
+                            <span class="btn-text">Submit Registration</span>
+                            <span class="btn-spinner"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                            <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </form>
+                    <p class="form-switch">Already registered? <a href="javascript:void(0)" onclick="showLogin('employee')">Sign In</a></p>
+                </div>
+
+            </div>
+
+            <div class="panel-footer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 4v6c0 5.25-3.5 10-7 12-3.5-2-7-6.75-7-12V6l7-4z"/></svg>
+                <span>Protected by Stackly Security · © 2026 Stackly Finance &amp; Accounting</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const container = document.getElementById('floatingCrosses');
+            // Finance-flavoured floating glyphs
+            const crossSymbols = ['+', '₹', '$', '€', '£', '%', '∑'];
+            const count = window.innerWidth < 520 ? 9 : 14;
+            for (let i = 0; i < count; i++) {
+                const span = document.createElement('span');
+                span.className = 'floating-cross';
+                span.textContent = crossSymbols[Math.floor(Math.random() * crossSymbols.length)];
+                span.style.left = Math.random() * 90 + '%';
+                span.style.fontSize = (1 + Math.random() * 2.2) + 'rem';
+                span.style.animationDuration = (12 + Math.random() * 18) + 's';
+                span.style.animationDelay = (Math.random() * 12) + 's';
+                span.style.opacity = (0.10 + Math.random() * 0.16);
+                container.appendChild(span);
+            }
+        })();
+
+        let currentRole = 'customer';
+        let currentMode = 'login';
+
+        const formContainer = document.getElementById('formContainer');
+        const roleTabs = document.querySelectorAll('.role-tab');
+        const toastEl = document.getElementById('toast');
+        const toastIconEl = document.getElementById('toastIconEl');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMsg = document.getElementById('toastMsg');
+        let toastTimer;
+
+        function isMobile() {
+            return window.innerWidth <= 520;
+        }
+
+        function isStrongPassword(pwd) {
+            if (!pwd || pwd.length < 8) return false;
+            const hasLetter = /[A-Za-z]/.test(pwd);
+            const hasDigit = /[0-9]/.test(pwd);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(pwd);
+            return hasLetter && hasDigit && hasSpecial;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+        }
+
+        function isGmailEmail(email) {
+            return email.trim().toLowerCase().endsWith('@gmail.com');
+        }
+
+        function showToast(type, title, msg) {
+            clearTimeout(toastTimer);
+            toastEl.className = 'toast ' + type;
+            toastIconEl.textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            toastTitle.textContent = title;
+            toastMsg.textContent = msg;
+            requestAnimationFrame(() => {
+                toastEl.classList.add('show');
+            });
+            toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3400);
+        }
+
+        function togglePassword(inputId, iconEl) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            iconEl.classList.toggle('fa-eye', !isPassword);
+            iconEl.classList.toggle('fa-eye-slash', isPassword);
+            iconEl.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        }
+
+        function filterNameKeypress(e) {
+            const char = String.fromCharCode(e.which || e.keyCode);
+            if (!/[A-Za-z\s]/.test(char)) e.preventDefault();
+        }
+
+        function sanitizeName(input) {
+            input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+        }
+
+        function filterPhoneKeypress(e) {
+            const char = String.fromCharCode(e.which || e.keyCode);
+            if (!/[0-9]/.test(char)) e.preventDefault();
+            if (this.value.replace(/\D/g, '').length >= 10) e.preventDefault();
+        }
+
+        function sanitizePhone(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val.length > 10) val = val.slice(0, 10);
+            input.value = val;
+        }
+
+        function setupInputFilters() {
+            ['customerCreateName', 'employeeCreateName'].forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', filterNameKeypress);
+                    input.addEventListener('input', function() { sanitizeName(this); });
+                }
+            });
+            const phoneInput = document.getElementById('customerCreatePhone');
+            if (phoneInput) {
+                phoneInput.addEventListener('keypress', filterPhoneKeypress);
+                phoneInput.addEventListener('input', function() { sanitizePhone(this); });
+            }
+        }
+
+        function getFormId(role, mode) {
+            return role + (mode === 'login' ? 'LoginForm' : 'CreateForm');
+        }
+
+        function scrollPanelIntoView() {
+            if (!isMobile()) return;
+            requestAnimationFrame(() => {
+                const panelTop = formContainer.getBoundingClientRect().top + window.scrollY - 90;
+                window.scrollTo({ top: Math.max(panelTop, 0), behavior: 'smooth' });
+            });
+        }
+
+        function switchToForm(targetRole, targetMode) {
+            const allWrappers = formContainer.querySelectorAll('.form-wrapper');
+            const targetId = getFormId(targetRole, targetMode);
+            const targetWrapper = document.getElementById(targetId);
+            if (!targetWrapper || targetWrapper.classList.contains('active')) return;
+
+            const currentActive = formContainer.querySelector('.form-wrapper.active');
+            if (currentActive) {
+                currentActive.style.animation = 'fadeSlideIn 0.3s ease reverse forwards';
+                setTimeout(() => {
+                    currentActive.classList.remove('active');
+                    currentActive.style.animation = '';
+                }, 280);
+            }
+
+            setTimeout(() => {
+                allWrappers.forEach(w => w.classList.remove('active'));
+                targetWrapper.classList.add('active');
+                targetWrapper.style.animation = 'fadeSlideIn 0.4s ease forwards';
+            }, 100);
+
+            currentRole = targetRole;
+            currentMode = targetMode;
+
+            roleTabs.forEach(tab => {
+                const isActive = tab.dataset.role === targetRole;
+                tab.classList.toggle('active', isActive);
+                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            scrollPanelIntoView();
+        }
+
+        function showLogin(role) { switchToForm(role, 'login'); }
+
+        function showCreateAccount(role) { switchToForm(role, 'create'); }
+
+        function switchRole(role) {
+            if (role === currentRole && currentMode === 'login') return;
+            switchToForm(role, 'login');
+        }
+
+        function simulateLoading(btnId, duration = 1200) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return Promise.resolve();
+            btn.classList.add('loading');
+            return new Promise(resolve => setTimeout(() => {
+                btn.classList.remove('loading');
+                resolve();
+            }, duration));
+        }
+
+        function handleLogin(event, role) {
+            event.preventDefault();
+            const btnId = role === 'customer' ? 'customerLoginBtn' : 'employeeLoginBtn';
+            let email = '',
+                password = '';
+
+            if (role === 'customer') {
+                email = (document.getElementById('customerLoginEmail')?.value || '').trim();
+                password = document.getElementById('customerLoginPassword')?.value || '';
+                if (!email || !isValidEmail(email) || !isGmailEmail(email)) {
+                    showToast('error', 'Invalid Email', 'Please enter a valid Gmail address.');
+                    return;
+                }
+            } else {
+                email = (document.getElementById('employeeLoginId')?.value || '').trim();
+                password = document.getElementById('employeeLoginPassword')?.value || '';
+                if (email.includes('@')) {
+                    if (!isValidEmail(email) || !isGmailEmail(email)) {
+                        showToast('error', 'Invalid Email', 'Email must be a valid Gmail address.');
+                        return;
+                    }
+                } else {
+                    if (!email) {
+                        showToast('error', 'Invalid ID', 'Please enter your Employee ID or email.');
+                        return;
+                    }
+                }
+            }
+
+            if (!isStrongPassword(password)) {
+                showToast('error', 'Weak Password',
+                    'Password must be at least 8 characters with letters, numbers & special chars.');
+                return;
+            }
+
+            simulateLoading(btnId).then(() => {
+                const loggedInName = email.includes('@') ?
+                    email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) :
+                    email;
+                localStorage.setItem('loggedInUserEmail', email);
+                localStorage.setItem('loggedInUserName', loggedInName);
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('loginMethod', email.includes('@') ? 'email' : 'empid');
+
+                if (role === 'employee') {
+                    const deptEl = document.getElementById('employeeLoginDept');
+                    const dept = deptEl ? (deptEl.options[deptEl.selectedIndex]?.text || deptEl.value) :
+                        'General';
+                    localStorage.setItem('loggedInDept', dept);
+                    localStorage.setItem('stacklyUserEmail', email);
+                    localStorage.setItem('stacklyUserName', loggedInName);
+                    localStorage.setItem('stacklyStaffRole', dept);
+                } else {
+                    localStorage.setItem('loggedInDept', '');
+                }
+
+                localStorage.setItem('loginTimestamp', new Date().toISOString());
+                const dashboardUrl = role === 'customer' ? 'client_dashboard.html' : 'employee-dashboard.html';
+                const roleLabel = role === 'customer' ? 'Client' : 'Staff';
+                showToast('success', `Welcome, ${loggedInName}!`,
+                    `Redirecting to your ${roleLabel} dashboard...`);
+                setTimeout(() => window.location.href = dashboardUrl, 1400);
+            });
+        }
+
+        function handleCreateAccount(event, role) {
+            event.preventDefault();
+            const nameId = role + 'CreateName';
+            const nameInput = document.getElementById(nameId);
+            const name = nameInput ? nameInput.value.trim() : '';
+
+            if (!/^[A-Za-z\s]{2,}$/.test(name)) {
+                showToast('error', 'Invalid Name',
+                    'Name must contain only alphabets and spaces (min 2 chars).');
+                if (nameInput) nameInput.focus();
+                return;
+            }
+
+            const emailId = role + 'CreateEmail';
+            const emailInput = document.getElementById(emailId);
+            const email = emailInput ? emailInput.value.trim() : '';
+
+            if (!email || !isValidEmail(email)) {
+                showToast('error', 'Invalid Email', 'Please enter a valid email address.');
+                if (emailInput) emailInput.focus();
+                return;
+            }
+
+            if (!isGmailEmail(email)) {
+                showToast('error', 'Email Restriction', 'Email must end with @gmail.com.');
+                if (emailInput) emailInput.focus();
+                return;
+            }
+
+            if (role === 'customer') {
+                const phoneInput = document.getElementById('customerCreatePhone');
+                const phone = phoneInput ? phoneInput.value.replace(/\D/g, '') : '';
+                if (phone.length !== 10) {
+                    showToast('error', 'Invalid Phone', 'Phone number must be exactly 10 digits.');
+                    if (phoneInput) phoneInput.focus();
+                    return;
+                }
+            }
+
+            const passwordId = role + 'CreatePassword';
+            const confirmId = role + 'CreateConfirmPassword';
+            const password = document.getElementById(passwordId)?.value || '';
+            const confirm = document.getElementById(confirmId)?.value || '';
+
+            if (password !== confirm) {
+                showToast('error', 'Password Mismatch', 'Passwords do not match.');
+                return;
+            }
+
+            if (!isStrongPassword(password)) {
+                showToast('error', 'Weak Password',
+                    'Password must be 8+ chars with letters, numbers & special chars.');
+                return;
+            }
+
+            const btnId = role + 'CreateBtn';
+            simulateLoading(btnId, 1400).then(() => {
+                const userName = name.split(' ')[0] || 'User';
+                localStorage.setItem('loggedInUserEmail', email);
+                localStorage.setItem('loggedInUserName', userName);
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('loginMethod', 'email');
+
+                if (role === 'employee') {
+                    const deptEl = document.getElementById('employeeCreateDept');
+                    const dept = deptEl ? (deptEl.options[deptEl.selectedIndex]?.text || deptEl.value) :
+                        'General';
+                    localStorage.setItem('loggedInDept', dept);
+                    localStorage.setItem('stacklyUserEmail', email);
+                    localStorage.setItem('stacklyUserName', userName);
+                    localStorage.setItem('stacklyStaffRole', dept);
+                } else {
+                    localStorage.setItem('loggedInDept', '');
+                }
+
+                localStorage.setItem('loginTimestamp', new Date().toISOString());
+                showToast('success',
+                    role === 'employee' ? 'Registration Submitted' : 'Account Created!',
+                    role === 'employee' ?
+                    `Thank you, ${userName}! Pending admin approval.` :
+                    `Welcome, ${userName}! Please sign in.`
+                );
+
+                if (nameInput) nameInput.value = '';
+                if (emailInput) emailInput.value = '';
+                const pwEl = document.getElementById(passwordId);
+                const cfEl = document.getElementById(confirmId);
+                if (pwEl) pwEl.value = '';
+                if (cfEl) cfEl.value = '';
+
+                if (role === 'customer') {
+                    const phoneInput = document.getElementById('customerCreatePhone');
+                    if (phoneInput) phoneInput.value = '';
+                }
+                if (role === 'employee') {
+                    const empIdInput = document.getElementById('employeeCreateEmpId');
+                    if (empIdInput) empIdInput.value = '';
+                }
+
+                [passwordId, confirmId].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.type = 'password';
+                });
+
+                setTimeout(() => {
+                    switchToForm(role, 'login');
+                    const loginEmailId = role === 'customer' ? 'customerLoginEmail' : 'employeeLoginId';
+                    const loginEl = document.getElementById(loginEmailId);
+                    if (loginEl) loginEl.value = email;
+                }, 1800);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize form state
+            const clientLogin = document.getElementById('customerLoginForm');
+            if (clientLogin) {
+                formContainer.querySelectorAll('.form-wrapper').forEach(w => w.classList.remove('active'));
+                clientLogin.classList.add('active');
+            }
+
+            currentRole = 'customer';
+            currentMode = 'login';
+            roleTabs.forEach(tab => {
+                const isActive = tab.dataset.role === 'customer';
+                tab.classList.toggle('active', isActive);
+                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            setupInputFilters();
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === '1') { e.preventDefault();
+                switchRole('customer'); }
+            if (e.ctrlKey && e.key === '2') { e.preventDefault();
+                switchRole('employee'); }
+        });
+    </script>
+</body>
+</html>
